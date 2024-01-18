@@ -1,0 +1,93 @@
+#!/usr/bin/env python3
+
+import sys
+import time
+
+"""This two functions represent hardware commands.
+In a real case hardware commands will be in used in replacement"""
+
+class Elevator:
+
+    """Init Elevator class with actual_floor, pressed_floor, min_floor and max_floor"""
+    def __init__(self, actual_floor, pressed_floor, min_floor, max_floor):
+        self.actual_f = actual_floor
+        self.pressed_f = pressed_floor
+        self.min_f = min_floor
+        self.max_f = max_floor
+
+    """Go up one floor at a time to the selected floor"""
+    def goUp(self):
+        while(self.pressed_f > self.actual_f):
+            self.actual_f += 1
+            print("Floor :", self.actual_f)
+            time.sleep(1)
+
+    """Go down one floor at a time to the selected floor"""
+    def goDown(self):
+        while(self.pressed_f < self.actual_f):
+            self.actual_f -= 1
+            print("Floor :", self.actual_f)
+            time.sleep(1)
+
+    """Check if the selected floor is available"""
+    def check_available_floor(self):
+        if (self.min_f > self.max_f):
+            print("Min > Max is impossible")
+            return (84)
+        elif (self.pressed_f < self.min_f or self.pressed_f > self.max_f):
+            print("Floor", self.pressed_f, "is unavailable")
+            return (84)
+        elif (self.actual_f < self.min_f or self.actual_f > self.max_f):
+            print("You're not supposed to be here")
+            return (84)
+        return (0)
+
+    """Choose if the elevator needs to go up or down"""
+    def move_to_floor(self):
+        up_or_down = self.pressed_f - self.actual_f
+        
+        if (up_or_down > 0):
+            self.goUp()
+        elif (up_or_down < 0):
+            self.goDown()
+        return (0)
+
+"""Print help"""
+def print_help():
+    print("USAGE\n\t./elevatorControl [-h or --help] actual_floor desire_floor minimal_floor maximum_floor")
+    print("DESCRIPTION\n\tProgram that control the up-and-down of elevators")
+
+
+def move_elevator(params: list):
+    elevator = Elevator(int(params[1]), int(params[2]), int(params[3]), int(params[4]))
+
+    if (elevator.check_available_floor() == 84):
+        return(84)
+    print ("Attention to the closing doors")
+    print("Floor :", elevator.actual_f)
+    time.sleep(1)
+    elevator.move_to_floor()
+    print("Be careful when you exit the elevator")
+    return (0)
+
+if __name__ == '__main__':
+    params = sys.argv.copy()
+
+    if (len(params) == 1):
+        print("No arguments were given")
+        exit (84)
+    if (params[1] == "-h" or params[1] == "--help"):
+        print_help()
+        exit(0)
+    if (len(params) != 5):
+        print("Bad number of arguments. Needs 4")
+        exit(84)
+    for i in range(1, len(params)):
+        try:
+            int(params[i])
+        except:
+            print("Only int are accepted")
+            exit(84)
+    if (move_elevator(params) == 84):
+        exit(84)
+    exit(0)    
